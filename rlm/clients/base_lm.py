@@ -6,8 +6,8 @@ from rlm.core.types import UsageSummary
 
 class BaseLM(ABC):
     """
-    Base class for all language model routers / clients. When the RLM makes sub-calls, it currently
-    does so in a model-agnostic way, so this class provides a base interface for all language models.
+    所有语言模型路由器/客户端的基类。当 RLM 进行子调用时，它目前
+    以模型无关的方式进行，因此此类为所有语言模型提供了基础接口。
     """
 
     def __init__(self, model_name: str, **kwargs):
@@ -24,10 +24,10 @@ class BaseLM(ABC):
 
     @abstractmethod
     def get_usage_summary(self) -> UsageSummary:
-        """Get cost summary for all model calls."""
+        """获取所有模型调用的成本摘要。"""
         raise NotImplementedError
 
     @abstractmethod
     def get_last_usage(self) -> UsageSummary:
-        """Get the last cost summary of the model."""
+        """获取模型的最后一次成本摘要。"""
         raise NotImplementedError

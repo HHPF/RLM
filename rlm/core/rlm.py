@@ -31,10 +31,10 @@ from rlm.utils.rlm_utils import filter_sensitive_keys
 
 class RLM:
     """
-    Recursive Language Model class that the user instantiates and runs on their tasks.
+    递归语言模型类，用户实例化并在其任务上运行。
 
-    Each completion() call spawns its own environment and LM handler, which are
-    cleaned up when the call completes.
+    每个 completion() 调用都会生成自己的环境和语言模型处理器，
+    当调用完成时会被清理。
     """
 
     def __init__(
@@ -53,19 +53,19 @@ class RLM:
         verbose: bool = False,
     ):
         """
-        Args:
-            backend: The backend to use for the RLM.
-            backend_kwargs: The kwargs to pass to the backend.
-            environment: The environment to use for the RLM.
-            environment_kwargs: The kwargs to pass to the environment.
-            depth: The current depth of the RLM (0-indexed).
-            max_depth: The maximum depth of the RLM. Currently, only depth 1 is supported.
-            max_iterations: The maximum number of iterations of the RLM.
-            custom_system_prompt: The custom system prompt to use for the RLM.
-            other_backends: A list of other client backends that the environments can use to make sub-calls.
-            other_backend_kwargs: The kwargs to pass to the other client backends (ordered to match other_backends).
-            logger: The logger to use for the RLM.
-            verbose: Whether to print verbose output in rich to console.
+        参数:
+            backend: RLM 使用的后端模型。
+            backend_kwargs: 传递给后端的关键字参数。
+            environment: RLM 使用的执行环境。
+            environment_kwargs: 传递给环境的关键字参数。
+            depth: RLM 的当前深度（从0开始）。
+            max_depth: RLM 的最大深度。目前仅支持深度1。
+            max_iterations: RLM 的最大迭代次数。
+            custom_system_prompt: 用于 RLM 的自定义系统提示。
+            other_backends: 环境可以用来进行子调用的其他客户端后端列表。
+            other_backend_kwargs: 传递给其他客户端后端的关键字参数（顺序与 other_backends 匹配）。
+            logger: 用于 RLM 的日志记录器。
+            verbose: 是否在控制台以富文本形式打印详细输出。
         """
         # Store config for spawning per-completion
         self.backend = backend
@@ -107,8 +107,8 @@ class RLM:
     @contextmanager
     def _spawn_completion_context(self, prompt: str | dict[str, Any]):
         """
-        Spawn an LM handler and environment for a single completion call.
-        Cleans up both when the context exits.
+        为单个完成调用生成语言模型处理器和环境。
+        当上下文退出时清理两者。
         """
         # Create client and wrap in handler
         client: BaseLM = get_client(self.backend, self.backend_kwargs)
@@ -140,8 +140,8 @@ class RLM:
 
     def _setup_prompt(self, prompt: str | dict[str, Any]) -> list[dict[str, Any]]:
         """
-        Setup the system prompt for the RLM. Also include metadata about the prompt and build
-        up the initial message history.
+        为 RLM 设置系统提示。还包括关于提示的元数据并构建
+        初始消息历史记录。
         """
         metadata = QueryMetadata(prompt)
         message_history = build_rlm_system_prompt(
@@ -154,17 +154,17 @@ class RLM:
         self, prompt: str | dict[str, Any], root_prompt: str | None = None
     ) -> RLMChatCompletion:
         """
-        Recursive Language Model completion call. This is the main entry point for querying an RLM, and
-        can replace a regular LM completion call.
+        递归语言模型完成调用。这是查询 RLM 的主要入口点，
+        可以替代常规的语言模型完成调用。
 
-        Spawns its own environment and LM handler for the duration of this call.
+        为此调用的持续时间生成自己的环境和语言模型处理器。
 
-        Args:
-            prompt: A single string or dictionary of messages to pass as context to the model.
-            root_prompt: We allow the RLM's root LM to see a (small) prompt that the user specifies. A common example of this
-            is if the user is asking the RLM to answer a question, we can pass the question as the root prompt.
-        Returns:
-            A final answer as a string.
+        参数:
+            prompt: 作为上下文传递给模型的单个字符串或消息字典。
+            root_prompt: 我们允许 RLM 的根语言模型看到用户指定的（小）提示。一个常见的例子是，
+            如果用户要求 RLM 回答问题，我们可以将问题作为根提示传递。
+        返回:
+            作为字符串的最终答案。
         """
         time_start = time.perf_counter()
 
@@ -240,8 +240,8 @@ class RLM:
         environment: BaseEnv,
     ) -> RLMIteration:
         """
-        Perform a single iteration of the RLM, including prompting the model
-        and code execution + tool execution.
+        执行 RLM 的单个迭代，包括提示模型
+        和代码执行 + 工具执行。
         """
         iter_start = time.perf_counter()
         response = lm_handler.completion(prompt)
@@ -262,8 +262,8 @@ class RLM:
 
     def _default_answer(self, message_history: list[dict[str, Any]], lm_handler: LMHandler) -> str:
         """
-        Default behavior if the RLM runs out of iterations and does not find a final answer.
-        It will take the message history, and try to generate a final answer from it.
+        如果 RLM 用尽迭代次数且未找到最终答案的默认行为。
+        它会使用消息历史记录，并尝试从中生成最终答案。
         """
         current_prompt = message_history + [
             {
@@ -287,7 +287,7 @@ class RLM:
 
     def _fallback_answer(self, message: str | dict[str, Any]) -> str:
         """
-        Fallback behavior if the RLM is actually at max depth, and should be treated as an LM.
+        如果 RLM 实际上已达到最大深度，应被视为普通语言模型的回退行为。
         """
         client: BaseLM = get_client(self.backend, self.backend_kwargs)
         response = client.completion(message)

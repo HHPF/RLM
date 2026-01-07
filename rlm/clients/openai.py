@@ -19,7 +19,7 @@ DEFAULT_PRIME_INTELLECT_BASE_URL = "https://api.pinference.ai/api/v1/"
 
 class OpenAIClient(BaseLM):
     """
-    LM Client for running models with the OpenAI API. Works with vLLM as well.
+    使用 OpenAI API 运行模型的语言模型客户端。也适用于 vLLM。
     """
 
     def __init__(

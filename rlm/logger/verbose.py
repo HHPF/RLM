@@ -1,9 +1,9 @@
 """
-Verbose printing for RLM using rich. Modify this however you please :)
-I was mainly using this for debugging, and a lot of it is vibe-coded.
+RLM 的详细打印功能，使用 rich 库。您可以随意修改这个文件 :)
+我主要用它来调试，很多内容是基于感觉编写的。
 
-Provides console output for debugging and understanding RLM execution.
-Uses a "Tokyo Night" inspired color theme.
+提供控制台输出来调试和理解 RLM 执行过程。
+使用 "Tokyo Night" 风格的配色方案。
 """
 
 from typing import Any
@@ -18,23 +18,23 @@ from rich.text import Text
 from rlm.core.types import CodeBlock, RLMIteration, RLMMetadata
 
 # ============================================================================
-# Tokyo Night Color Theme
+# Tokyo Night 配色方案
 # ============================================================================
 COLORS = {
-    "primary": "#7AA2F7",  # Soft blue - headers, titles
-    "secondary": "#BB9AF7",  # Soft purple - emphasis
-    "success": "#9ECE6A",  # Soft green - success, code
-    "warning": "#E0AF68",  # Soft amber - warnings
-    "error": "#F7768E",  # Soft red/pink - errors
-    "text": "#A9B1D6",  # Soft gray-blue - regular text
-    "muted": "#565F89",  # Muted gray - less important
-    "accent": "#7DCFFF",  # Bright cyan - accents
-    "bg_subtle": "#1A1B26",  # Dark background
-    "border": "#3B4261",  # Border color
-    "code_bg": "#24283B",  # Code background
+    "primary": "#7AA2F7",  # 柔和蓝色 - 标题、头部
+    "secondary": "#BB9AF7",  # 柔和紫色 - 强调
+    "success": "#9ECE6A",  # 柔和绿色 - 成功、代码
+    "warning": "#E0AF68",  # 柔和琥珀色 - 警告
+    "error": "#F7768E",  # 柔和红/粉色 - 错误
+    "text": "#A9B1D6",  # 柔和灰蓝色 - 常规文本
+    "muted": "#565F89",  # 静音灰色 - 次要内容
+    "accent": "#7DCFFF",  # 明亮青色 - 强调
+    "bg_subtle": "#1A1B26",  # 深色背景
+    "border": "#3B4261",  # 边框颜色
+    "code_bg": "#24283B",  # 代码背景
 }
 
-# Rich styles
+# Rich 样式
 STYLE_PRIMARY = Style(color=COLORS["primary"], bold=True)
 STYLE_SECONDARY = Style(color=COLORS["secondary"])
 STYLE_SUCCESS = Style(color=COLORS["success"])
@@ -46,7 +46,7 @@ STYLE_ACCENT = Style(color=COLORS["accent"], bold=True)
 
 
 def _to_str(value: Any) -> str:
-    """Convert any value to string safely."""
+    """安全地将任何值转换为字符串。"""
     if isinstance(value, str):
         return value
     return str(value)
@@ -54,21 +54,21 @@ def _to_str(value: Any) -> str:
 
 class VerbosePrinter:
     """
-    Rich console printer for RLM verbose output.
+    RLM 详细输出的 Rich 控制台打印器。
 
-    Displays beautiful, structured output showing the RLM's execution:
-    - Initial configuration panel
-    - Each iteration with response summaries
-    - Code execution with results
-    - Sub-calls to other models
+    显示美观、结构化的输出，展示 RLM 的执行过程：
+    - 初始配置面板
+    - 每次迭代的响应摘要
+    - 代码执行及其结果
+    - 对其他模型的子调用
     """
 
     def __init__(self, enabled: bool = True):
         """
-        Initialize the verbose printer.
+        初始化详细打印器。
 
-        Args:
-            enabled: Whether verbose printing is enabled. If False, all methods are no-ops.
+        参数:
+            enabled: 是否启用详细打印。如果为 False，所有方法都不执行任何操作。
         """
         self.enabled = enabled
         self.console = Console() if enabled else None
@@ -83,17 +83,17 @@ class VerbosePrinter:
         max_depth: int,
         other_backends: list[str] | None = None,
     ) -> None:
-        """Print the initial RLM configuration header."""
+        """打印初始 RLM 配置头部。"""
         if not self.enabled:
             return
 
-        # Main title
+        # 主标题
         title = Text()
         title.append("◆ ", style=STYLE_ACCENT)
         title.append("RLM", style=Style(color=COLORS["primary"], bold=True))
-        title.append(" ━ Recursive Language Model", style=STYLE_MUTED)
+        title.append(" ━ 递归语言模型", style=STYLE_MUTED)
 
-        # Configuration table
+        # 配置表格
         config_table = Table(
             show_header=False,
             show_edge=False,
@@ -135,7 +135,7 @@ class VerbosePrinter:
                 "",
             )
 
-        # Wrap in panel
+        # 包装在面板中
         panel = Panel(
             config_table,
             title=title,
@@ -149,7 +149,7 @@ class VerbosePrinter:
         self.console.print()
 
     def print_metadata(self, metadata: RLMMetadata) -> None:
-        """Print RLM metadata as header."""
+        """将 RLM 元数据打印为头部。"""
         if not self.enabled:
             return
 
@@ -166,38 +166,38 @@ class VerbosePrinter:
         )
 
     def print_iteration_start(self, iteration: int) -> None:
-        """Print the start of a new iteration."""
+        """打印新迭代的开始。"""
         if not self.enabled:
             return
 
         self._iteration_count = iteration
 
         rule = Rule(
-            Text(f" Iteration {iteration} ", style=STYLE_PRIMARY),
+            Text(f" 迭代 {iteration} ", style=STYLE_PRIMARY),
             style=COLORS["border"],
             characters="─",
         )
         self.console.print(rule)
 
     def print_completion(self, response: Any, iteration_time: float | None = None) -> None:
-        """Print a completion response."""
+        """打印完成响应。"""
         if not self.enabled:
             return
 
-        # Header with timing
+        # 带时间的头部
         header = Text()
         header.append("◇ ", style=STYLE_ACCENT)
-        header.append("LLM Response", style=STYLE_PRIMARY)
+        header.append("LLM 响应", style=STYLE_PRIMARY)
         if iteration_time:
             header.append(f"  ({iteration_time:.2f}s)", style=STYLE_MUTED)
 
-        # Response content
+        # 响应内容
         response_str = _to_str(response)
         response_text = Text(response_str, style=STYLE_TEXT)
 
-        # Count words roughly
+        # 粗略计算单词数
         word_count = len(response_str.split())
-        footer = Text(f"~{word_count} words", style=STYLE_MUTED)
+        footer = Text(f"~{word_count} 词", style=STYLE_MUTED)
 
         panel = Panel(
             Group(response_text, Text(), footer),
@@ -209,48 +209,48 @@ class VerbosePrinter:
         self.console.print(panel)
 
     def print_code_execution(self, code_block: CodeBlock) -> None:
-        """Print code execution details."""
+        """打印代码执行详情。"""
         if not self.enabled:
             return
 
         result = code_block.result
 
-        # Header
+        # 头部
         header = Text()
         header.append("▸ ", style=STYLE_SUCCESS)
-        header.append("Code Execution", style=Style(color=COLORS["success"], bold=True))
+        header.append("代码执行", style=Style(color=COLORS["success"], bold=True))
         if result.execution_time:
             header.append(f"  ({result.execution_time:.3f}s)", style=STYLE_MUTED)
 
-        # Build content
+        # 构建内容
         content_parts = []
 
-        # Code snippet
+        # 代码片段
         code_text = Text()
-        code_text.append("Code:\n", style=STYLE_MUTED)
+        code_text.append("代码:\n", style=STYLE_MUTED)
         code_text.append(_to_str(code_block.code), style=STYLE_TEXT)
         content_parts.append(code_text)
 
-        # Stdout if present
+        # 如果存在标准输出
         stdout_str = _to_str(result.stdout) if result.stdout else ""
         if stdout_str.strip():
             stdout_text = Text()
-            stdout_text.append("\nOutput:\n", style=STYLE_MUTED)
+            stdout_text.append("\n输出:\n", style=STYLE_MUTED)
             stdout_text.append(stdout_str, style=STYLE_SUCCESS)
             content_parts.append(stdout_text)
 
-        # Stderr if present (error)
+        # 如果存在标准错误（错误）
         stderr_str = _to_str(result.stderr) if result.stderr else ""
         if stderr_str.strip():
             stderr_text = Text()
-            stderr_text.append("\nError:\n", style=STYLE_MUTED)
+            stderr_text.append("\n错误:\n", style=STYLE_MUTED)
             stderr_text.append(stderr_str, style=STYLE_ERROR)
             content_parts.append(stderr_text)
 
-        # Sub-calls summary
+        # 子调用摘要
         if result.rlm_calls:
             calls_text = Text()
-            calls_text.append(f"\n↳ {len(result.rlm_calls)} sub-call(s)", style=STYLE_SECONDARY)
+            calls_text.append(f"\n↳ {len(result.rlm_calls)} 个子调用", style=STYLE_SECONDARY)
             content_parts.append(calls_text)
 
         panel = Panel(
@@ -269,23 +269,23 @@ class VerbosePrinter:
         response_preview: str,
         execution_time: float | None = None,
     ) -> None:
-        """Print a sub-call to another model."""
+        """打印对另一个模型的子调用。"""
         if not self.enabled:
             return
 
-        # Header
+        # 头部
         header = Text()
         header.append("  ↳ ", style=STYLE_SECONDARY)
-        header.append("Sub-call: ", style=STYLE_SECONDARY)
+        header.append("子调用: ", style=STYLE_SECONDARY)
         header.append(_to_str(model), style=STYLE_ACCENT)
         if execution_time:
             header.append(f"  ({execution_time:.2f}s)", style=STYLE_MUTED)
 
-        # Content
+        # 内容
         content = Text()
-        content.append("Prompt: ", style=STYLE_MUTED)
+        content.append("提示: ", style=STYLE_MUTED)
         content.append(_to_str(prompt_preview), style=STYLE_TEXT)
-        content.append("\nResponse: ", style=STYLE_MUTED)
+        content.append("\n响应: ", style=STYLE_MUTED)
         content.append(_to_str(response_preview), style=STYLE_TEXT)
 
         panel = Panel(
@@ -299,23 +299,23 @@ class VerbosePrinter:
 
     def print_iteration(self, iteration: RLMIteration, iteration_num: int) -> None:
         """
-        Print a complete iteration including response and code executions.
-        This is the main entry point for printing an iteration.
+        打印完整的迭代，包括响应和代码执行。
+        这是打印迭代的主要入口点。
         """
         if not self.enabled:
             return
 
-        # Print iteration header
+        # 打印迭代头部
         self.print_iteration_start(iteration_num)
 
-        # Print the LLM response
+        # 打印 LLM 响应
         self.print_completion(iteration.response, iteration.iteration_time)
 
-        # Print each code block execution
+        # 打印每个代码块执行
         for code_block in iteration.code_blocks:
             self.print_code_execution(code_block)
 
-            # Print any sub-calls made during this code block
+            # 打印在此代码块期间进行的任何子调用
             for call in code_block.result.rlm_calls:
                 self.print_subcall(
                     model=call.root_model,
@@ -325,16 +325,16 @@ class VerbosePrinter:
                 )
 
     def print_final_answer(self, answer: Any) -> None:
-        """Print the final answer."""
+        """打印最终答案。"""
         if not self.enabled:
             return
 
-        # Title
+        # 标题
         title = Text()
         title.append("★ ", style=STYLE_WARNING)
-        title.append("Final Answer", style=Style(color=COLORS["warning"], bold=True))
+        title.append("最终答案", style=Style(color=COLORS["warning"], bold=True))
 
-        # Answer content
+        # 答案内容
         answer_text = Text(_to_str(answer), style=STYLE_TEXT)
 
         panel = Panel(
@@ -355,11 +355,11 @@ class VerbosePrinter:
         total_time: float,
         usage_summary: dict[str, Any] | None = None,
     ) -> None:
-        """Print a summary at the end of execution."""
+        """在执行结束时打印摘要。"""
         if not self.enabled:
             return
 
-        # Summary table
+        # 摘要表格
         summary_table = Table(
             show_header=False,
             show_edge=False,
@@ -369,8 +369,8 @@ class VerbosePrinter:
         summary_table.add_column("metric", style=STYLE_MUTED)
         summary_table.add_column("value", style=STYLE_ACCENT)
 
-        summary_table.add_row("Iterations", str(total_iterations))
-        summary_table.add_row("Total Time", f"{total_time:.2f}s")
+        summary_table.add_row("迭代次数", str(total_iterations))
+        summary_table.add_row("总时间", f"{total_time:.2f}s")
 
         if usage_summary:
             total_input = sum(
@@ -382,10 +382,10 @@ class VerbosePrinter:
                 for m in usage_summary.get("model_usage_summaries", {}).values()
             )
             if total_input or total_output:
-                summary_table.add_row("Input Tokens", f"{total_input:,}")
-                summary_table.add_row("Output Tokens", f"{total_output:,}")
+                summary_table.add_row("输入令牌", f"{total_input:,}")
+                summary_table.add_row("输出令牌", f"{total_output:,}")
 
-        # Wrap in rule
+        # 包装在规则中
         self.console.print()
         self.console.print(Rule(style=COLORS["border"], characters="═"))
         self.console.print(summary_table, justify="center")

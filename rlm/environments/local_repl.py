@@ -113,8 +113,8 @@ _SAFE_BUILTINS = {
 
 class LocalREPL(NonIsolatedEnv):
     """
-    Local REPL environment with persistent Python namespace.
-    Executes code in a sandboxed namespace with access to context data.
+    具有持久 Python 命名空间的本地 REPL 环境。
+    在可以访问上下文数据的沙箱命名空间中执行代码。
     """
 
     def __init__(
@@ -143,7 +143,7 @@ class LocalREPL(NonIsolatedEnv):
             self.execute_code(setup_code)
 
     def setup(self):
-        """Setup the environment."""
+        """设置环境。"""
         # Create sandboxed globals
         self.globals: dict[str, Any] = {
             "__builtins__": _SAFE_BUILTINS.copy(),
@@ -160,18 +160,18 @@ class LocalREPL(NonIsolatedEnv):
         self.globals["llm_query_batched"] = self._llm_query_batched
 
     def _final_var(self, variable_name: str) -> str:
-        """Return the value of a variable as a final answer."""
+        """返回变量的值作为最终答案。"""
         variable_name = variable_name.strip().strip("\"'")
         if variable_name in self.locals:
             return str(self.locals[variable_name])
         return f"Error: Variable '{variable_name}' not found"
 
     def _llm_query(self, prompt: str, model: str | None = None) -> str:
-        """Query the LM via socket connection to the handler.
+        """通过与处理器的套接字连接查询语言模型。
 
-        Args:
-            prompt: The prompt to send to the LM.
-            model: Optional model name to use (if handler has multiple clients).
+        参数:
+            prompt: 发送给语言模型的提示。
+            model: 可选的模型名称（如果处理器有多个客户端）。
         """
         if not self.lm_handler_address:
             return "Error: No LM handler configured"
@@ -193,14 +193,14 @@ class LocalREPL(NonIsolatedEnv):
             return f"Error: LM query failed - {e}"
 
     def _llm_query_batched(self, prompts: list[str], model: str | None = None) -> list[str]:
-        """Query the LM with multiple prompts concurrently.
+        """同时用多个提示查询语言模型。
 
-        Args:
-            prompts: List of prompts to send to the LM.
-            model: Optional model name to use (if handler has multiple clients).
+        参数:
+            prompts: 发送给语言模型的提示列表。
+            model: 可选的模型名称（如果处理器有多个客户端）。
 
-        Returns:
-            List of responses in the same order as input prompts.
+        返回:
+            与输入提示顺序相同的响应列表。
         """
         if not self.lm_handler_address:
             return ["Error: No LM handler configured"] * len(prompts)
@@ -222,7 +222,7 @@ class LocalREPL(NonIsolatedEnv):
             return [f"Error: LM query failed - {e}"] * len(prompts)
 
     def load_context(self, context_payload: dict | list | str):
-        """Load context into the environment."""
+        """将上下文加载到环境中。"""
         if isinstance(context_payload, str):
             context_path = os.path.join(self.temp_dir, "context.txt")
             with open(context_path, "w") as f:
@@ -238,7 +238,7 @@ class LocalREPL(NonIsolatedEnv):
 
     @contextmanager
     def _capture_output(self):
-        """Thread-safe context manager to capture stdout/stderr."""
+        """线程安全的上下文管理器，用于捕获标准输出/错误。"""
         with self._lock:
             old_stdout, old_stderr = sys.stdout, sys.stderr
             stdout_buf, stderr_buf = io.StringIO(), io.StringIO()
@@ -250,7 +250,7 @@ class LocalREPL(NonIsolatedEnv):
 
     @contextmanager
     def _temp_cwd(self):
-        """Temporarily change to temp directory for execution."""
+        """临时更改为执行的临时目录。"""
         old_cwd = os.getcwd()
         try:
             os.chdir(self.temp_dir)
@@ -259,7 +259,7 @@ class LocalREPL(NonIsolatedEnv):
             os.chdir(old_cwd)
 
     def execute_code(self, code: str) -> REPLResult:
-        """Execute code in the persistent namespace and return result."""
+        """在持久命名空间中执行代码并返回结果。"""
         start_time = time.perf_counter()
 
         # Clear pending LLM calls from previous execution
@@ -298,7 +298,7 @@ class LocalREPL(NonIsolatedEnv):
         return False
 
     def cleanup(self):
-        """Clean up temp directory and reset state."""
+        """清理临时目录并重置状态。"""
         try:
             shutil.rmtree(self.temp_dir)
         except Exception:

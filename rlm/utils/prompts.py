@@ -86,20 +86,21 @@ def build_rlm_system_prompt(
     query_metadata: QueryMetadata,
 ) -> list[dict[str, str]]:
     """
-    Build the initial system prompt for the REPL environment based on extra prompt metadata.
+    根据额外的提示元数据构建 REPL 环境的初始系统提示。
 
-    Args:
-        query_metadata: QueryMetadata object containing context metadata
+    参数:
+        system_prompt: 系统提示文本
+        query_metadata: 包含上下文元数据的 QueryMetadata 对象
 
-    Returns:
-        List of message dictionaries
+    返回:
+        消息字典列表
     """
 
     context_lengths = query_metadata.context_lengths
     context_total_length = query_metadata.context_total_length
     context_type = query_metadata.context_type
 
-    # If there are more than 100 chunks, truncate to the first 100 chunks.
+    # 如果有超过 100 个块，截断到前 100 个块。
     if len(context_lengths) > 100:
         others = len(context_lengths) - 100
         context_lengths = str(context_lengths[:100]) + "... [" + str(others) + " others]"
@@ -112,7 +113,9 @@ def build_rlm_system_prompt(
     ]
 
 
+# 用户提示模板，指导模型如何使用 REPL 环境
 USER_PROMPT = """Think step-by-step on what to do using the REPL environment (which contains the context) to answer the prompt.\n\nContinue using the REPL environment, which has the `context` variable, and querying sub-LLMs by writing to ```repl``` tags, and determine your answer. Your next action:"""
+# 带原始提示的用户提示模板
 USER_PROMPT_WITH_ROOT = """Think step-by-step on what to do using the REPL environment (which contains the context) to answer the original prompt: \"{root_prompt}\".\n\nContinue using the REPL environment, which has the `context` variable, and querying sub-LLMs by writing to ```repl``` tags, and determine your answer. Your next action:"""
 
 

@@ -5,8 +5,8 @@ from rlm.core.types import REPLResult
 
 class BaseEnv(ABC):
     """
-    Base REPL-like environment that the RLM uses to interact with. The primary types are isolated and non-isolated,
-    where isolated environments are on a separate machine from the LM.
+    RLM 用于交互的基本 REPL 类环境。主要类型是隔离和非隔离的，
+    其中隔离环境位于与语言模型不同的机器上。
     """
 
     def __init__(self, **kwargs):
@@ -27,8 +27,8 @@ class BaseEnv(ABC):
 
 class IsolatedEnv(BaseEnv, ABC):
     """
-    These environments (e.g. Prime Envs, Modal Envs) sit on a completely separate machine from the LM,
-    guaranteeing complete isolation from the LM process.
+    这些环境（例如 Prime Envs、Modal Envs）位于与语言模型完全分离的机器上，
+    保证与语言模型进程的完全隔离。
     """
 
     def __init__(self, **kwargs):
@@ -49,9 +49,8 @@ class IsolatedEnv(BaseEnv, ABC):
 
 class NonIsolatedEnv(BaseEnv, ABC):
     """
-    These environments run on the same machine as the LM, and provide different levels of isolation
-    depending on the choice of environment. The simplest, default is a local Python REPL that runs
-    as a subprocess.
+    这些环境与语言模型运行在同一台机器上，并根据环境选择提供不同级别的隔离。
+    最简单的默认选项是作为子进程运行的本地 Python REPL。
     """
 
     def __init__(self, **kwargs):

@@ -1,5 +1,5 @@
 """
-Parsing utilities for RLM trjaectories.
+RLM 轨迹的解析工具。
 """
 
 import re
@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 def find_code_blocks(text: str) -> list[str]:
     """
-    Find REPL code blocks in text wrapped in triple backticks and return List of content(s).
-    Returns None if no code blocks are found.
+    在文本中查找用三个反引号包裹的 REPL 代码块并返回内容列表。
+    如果没有找到代码块，则返回空列表。
     """
     pattern = r"```repl\s*\n(.*?)\n```"
     results = []
@@ -28,17 +28,17 @@ def find_code_blocks(text: str) -> list[str]:
 
 def find_final_answer(text: str, environment: "BaseEnv | None" = None) -> str | None:
     """
-    Find FINAL(...) or FINAL_VAR(...) statement in response and return the final answer string.
+    在响应中查找 FINAL(...) 或 FINAL_VAR(...) 语句并返回最终答案字符串。
 
-    If FINAL_VAR is found and an environment is provided, executes code to retrieve the variable value.
-    Returns None if neither pattern is found.
+    如果找到 FINAL_VAR 且提供了环境，则执行代码以检索变量值。
+    如果未找到任何模式，则返回 None。
 
-    Args:
-        text: The response text to parse
-        environment: Optional environment to execute code for FINAL_VAR retrieval
+    参数:
+        text: 要解析的响应文本
+        environment: 可选环境，用于执行 FINAL_VAR 检索的代码
 
-    Returns:
-        The final answer string, or None if no final answer pattern is found
+    返回:
+        最终答案字符串，如果未找到最终答案模式则返回 None
     """
     # Check for FINAL_VAR pattern first - must be at start of line
     final_var_pattern = r"^\s*FINAL_VAR\((.*?)\)"
@@ -66,16 +66,15 @@ def format_iteration(
     iteration: RLMIteration, max_character_length: int = 20000
 ) -> list[dict[str, str]]:
     """
-    Format an RLM iteration (including all code blocks) to append to the message history for
-    the prompt of the LM in the next iteration. We also truncate code execution results
-    that exceed the max_character_length.
+    格式化 RLM 迭代（包括所有代码块），以追加到消息历史记录中，
+    用于下一次迭代中语言模型的提示。我们还会截断超过最大字符长度的代码执行结果。
 
-    Args:
-        iteration: The iteration to format
-        max_character_length: The maximum character length of the result
+    参数:
+        iteration: 要格式化的迭代
+        max_character_length: 结果的最大字符长度
 
-    Returns:
-        A list of messages to add to the next prompt
+    返回:
+        要添加到下一个提示的消息列表
     """
     messages = [{"role": "assistant", "content": iteration.response}]
 
@@ -104,10 +103,10 @@ def format_iteration(
 
 def format_execution_result(result: REPLResult) -> str:
     """
-    Format the execution result as a string for display.
+    将执行结果格式化为用于显示的字符串。
 
-    Args:
-        result: The REPLResult object to format.
+    参数:
+        result: 要格式化的 REPLResult 对象。
     """
     result_parts = []
 
@@ -136,14 +135,14 @@ def format_execution_result(result: REPLResult) -> str:
 
 
 def check_for_final_answer(response: str, repl_env, logger) -> str | None:
-    """Check if response contains a final answer."""
+    """检查响应是否包含最终答案。"""
     # Use the new find_final_answer function which handles both FINAL and FINAL_VAR
     return find_final_answer(response, environment=repl_env)
 
 
 def convert_context_for_repl(context):
     """
-    Convert REPL context to either some
+    将 REPL 上下文转换为适当的格式
     """
     if isinstance(context, dict):
         context_data = context

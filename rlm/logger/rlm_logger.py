@@ -1,7 +1,7 @@
 """
-Logger for RLM iterations.
+RLM 迭代的日志记录器。
 
-Writes RLMIteration data to JSON-lines files for analysis and debugging.
+将 RLMIteration 数据写入 JSON-lines 文件，用于分析和调试。
 """
 
 import json
@@ -13,7 +13,7 @@ from rlm.core.types import RLMIteration, RLMMetadata
 
 
 class RLMLogger:
-    """Logger that writes RLMIteration data to a JSON-lines file."""
+    """将 RLMIteration 数据写入 JSON-lines 文件的日志记录器。"""
 
     def __init__(self, log_dir: str, file_name: str = "rlm"):
         self.log_dir = log_dir
@@ -27,7 +27,7 @@ class RLMLogger:
         self._metadata_logged = False
 
     def log_metadata(self, metadata: RLMMetadata):
-        """Log RLM metadata as the first entry in the file."""
+        """将 RLM 元数据作为文件的第一个条目记录。"""
         if self._metadata_logged:
             return
 
@@ -44,7 +44,7 @@ class RLMLogger:
         self._metadata_logged = True
 
     def log(self, iteration: RLMIteration):
-        """Log an RLMIteration to the file."""
+        """将 RLMIteration 记录到文件中。"""
         self._iteration_count += 1
 
         entry = {
@@ -60,4 +60,5 @@ class RLMLogger:
 
     @property
     def iteration_count(self) -> int:
+        """获取已记录的迭代次数。"""
         return self._iteration_count
